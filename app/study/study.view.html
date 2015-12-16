@@ -1,0 +1,22 @@
+<div class="col-md-6 col-md-offset-3">
+    <form name="form" ng-submit="vm.submitAnswer()" role="form" ng-hide="vm.finished">
+        <h2>Type the number you hear into the box and press 'enter'</h2>
+    
+        <div class="form-group" ng-class="{ 'has-error': form.answer.$dirty && form.answer.$error.required }">
+            <input type="number" name="answer" id="answer" class="form-control" ng-model="vm.answer" required autofocus />
+            <span ng-show="form.answer.$dirty && form.answer.$error.required" class="help-block">Please type a number</span>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary">OK</button>
+        </div>
+    </form>
+
+    <form name="form" ng-submit="vm.endStudy()" role="form" ng-show="vm.finished">
+        <h2>Thank you! All done.</h2>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">OK</button>
+        </div>
+    </form>
+
+</div>

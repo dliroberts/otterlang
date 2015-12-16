@@ -1,0 +1,38 @@
+<h1>New study participation</h1>
+
+<p>Please fill out the following details, and then click 'Start study' when you're ready.</p>
+
+    <form name="form" ng-submit="vm.startStudy()" role="form">
+        <div class="form-group" ng-class="{ 'has-error': form.participantname.$dirty && form.participantname.$error.required }">
+            <label for="participantname">Your name</label>
+            <input type="text" name="participantname" id="participantname" class="form-control" ng-model="vm.participantname" required autofocus />
+            <span ng-show="form.participantname.$dirty && form.participantname.$error.required" class="help-block">Name is required</span>
+        </div>
+        
+        <div class="form-group" ng-class="{ 'has-error': form.dateofbirth.$dirty && form.dateofbirth.$error.required }">
+            <label for="dateofbirth">Your date of birth (yyyy-mm-dd)</label>
+            <input type="text" name="dateofbirth" id="dateofbirth" class="form-control" ng-model="vm.dateofbirth" required />
+            <span ng-show="form.dateofbirth.$dirty && form.dateofbirth.$error.required" class="help-block">Date of birth is required</span>
+        </div>
+        
+        <div class="form-group" ng-class="{ 'has-error': form.todaysdate.$dirty && form.todaysdate.$error.required }">
+            <label for="todaysdate">Today's date (yyyy-mm-dd)</label>
+            <input type="text" name="todaysdate" id="todaysdate" class="form-control" ng-model="vm.todaysdate" required />
+            <span ng-show="form.todaysdate.$dirty && form.todaysdate.$error.required" class="help-block">Today's date is required</span>
+        </div>
+        
+        <p>When you click 'start study', after a few seconds, you'll hear a number being read out. Please type this number into the box and hit 'enter' as quickly as possible. A few things to bear in mind:</p>
+        <ul>
+            <li>Make sure your speakers are on! <a href ng-click="vm.testAudio();">Click here to test that the volume is set appropriately.</a></li>
+            <li>Type digits, not words: 83, not eighty-three.</li>
+            <li>25 numbers will be read out. Each one is between 0 and 100.</li>
+            <li>The numbers are read out in a random order.</li>
+        </ul>
+<br>
+        <div class="form-actions">
+            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary">Start study</button>
+        </div>
+    </form>
+
+<p>&nbsp;</p>
+<p><a href="#/login" class="btn">Logout</a></p>
