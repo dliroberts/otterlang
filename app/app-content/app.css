@@ -1,3 +1,12 @@
 p {
     font-size: 12pt !important;
 }
+
+.pleasewait {
+    background-color: lightgray;
+}
+
+.notice {
+    color: dimgray;
+    font-style: italic;
+}

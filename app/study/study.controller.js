@@ -5,9 +5,11 @@
         .module('app')
         .controller('StudyController', StudyController);
 
-    StudyController.$inject = ['$location', 'FlashService', '$rootScope', '$http'];
-    function StudyController($location, FlashService, $rootScope, $http) {
+    StudyController.$inject = ['$location', 'FlashService', '$rootScope', '$http', '$scope', '$timeout'];
+    function StudyController($location, FlashService, $rootScope, $http, $scope, $timeout) {
         var vm = this;
+        
+        var PRE_PROMPT_PAUSE_MILLIS = 2500;
         
         var numberPrompts = {
             english: [1,2,3,4],
@@ -20,10 +22,11 @@
         
         vm.number = null;
         vm.questionStartTs = null;
-        vm.inputdisabled = true;
+        readyForResponse(false);
         vm.finished = false;
+        vm.acceptInput = false;
         
-        setTimeout(function() {startQuestion();}, 3000);
+        setTimeout(function() {startQuestion();}, PRE_PROMPT_PAUSE_MILLIS);
 
         (function initController() {
             vm.studylanguage = $rootScope.globals.studylanguage;
@@ -38,28 +41,35 @@
             
             var audio = new Audio('../../audio/' + vm.studylanguage + '/' + vm.number + extension);
             vm.questionStartTs = new Date().getTime();
-            vm.inputdisabled = false;
+            readyForResponse(true);
             audio.play();
         }
 
         function submitAnswer() {
+            var answer = vm.answer;
+            $('form #answer').val('');
+            if (!vm.acceptInput) {
+                console.log('throwing away superfluous enter');
+                return;
+            }
+            
             var participantname = $rootScope.globals.participantname;
             var dateofbirth = $rootScope.globals.dateofbirth;
             var todaysdate = $rootScope.globals.todaysdate;
             var prompt = vm.number;
-            var answer = vm.answer;
             var correct = prompt == answer;
-            var timeFromQuestionStart = new Date().getTime() - vm.questionStartTs;
+            var answerSubmitTs = new Date().getTime();
+            var timeFromQuestionStart = answerSubmitTs - vm.questionStartTs;
+            
             // TODO determine length of audio file!
             
-            vm.inputdisabled = true;
-            $('form #answer').val('');
+            readyForResponse(false);
             
             var data = {
                 'Language': vm.studylanguage,
                 'Participant name': $rootScope.globals.participantname,
                 'Number prompted': vm.number,
-                'Number typed': vm.answer,
+                'Number typed': answer,
                 'Correct?': prompt == answer,
                 'Time from start of prompt, ms': new Date().getTime() - vm.questionStartTs,
                 'Time from end of prompt, ms': '' // TODO determine length of audio file!
@@ -68,17 +78,33 @@
             var datastr = $.param(data);
             $http.jsonp('https://script.google.com/macros/s/AKfycbzy1IfR7EnffJuxotEutGIsFDMF5q44bLFDVD48GqWE1swlDSE/exec?prefix=JSON_CALLBACK&' + datastr).then(
                 function success() {
-                    if (vm.prompts.length > 0)
-                        setTimeout(startQuestion, 3000);
+                    if (vm.prompts.length > 0) {
+                        var apiCallDuration = new Date().getTime() - answerSubmitTs;
+                        var timeout = apiCallDuration > PRE_PROMPT_PAUSE_MILLIS ? 0 : PRE_PROMPT_PAUSE_MILLIS - apiCallDuration;
+                        setTimeout(startQuestion, timeout);
+                    }
                     else {
                         vm.finished = true;
                     }
                 },
                 function failure(error) {
-                    alert('Unable to send data :( - ' + error);
+                    alert('Unable to send data :( - ' + JSON.stringify(error));
                 }
             );
         };
+        
+        // Hackery... Wasn't working with ng-show and ng-class :(
+        function readyForResponse(ready) {
+            if (ready) {
+                $('.notice').hide();
+                $('#answer').removeClass('pleasewait');
+            }
+            else {
+                $('.notice').show();
+                $('#answer').addClass('pleasewait');
+            }
+            vm.acceptInput = ready;
+        }
 
         function endStudy() {
             $location.path('/');
