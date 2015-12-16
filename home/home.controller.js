@@ -5,12 +5,12 @@
         .module('app')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['UserService', '$rootScope'];
-    function HomeController(UserService, $rootScope) {
+    HomeController.$inject = ['$location', 'UserService', '$rootScope'];
+    function HomeController($location, UserService, $rootScope) {
         var vm = this;
 
         vm.user = null;
-        vm.startStudy = startStudy;
+        vm.participantInfo = participantInfo;
 
         initController();
 
@@ -18,8 +18,9 @@
             loadCurrentUser();
         }
 
-        function startStudy() {
-            console.log("TODO Start study.");
+        function participantInfo(lang) {
+            $rootScope.globals.studylanguage = lang;
+            $location.path('/participantinfo');
         }
 
         function loadCurrentUser() {
