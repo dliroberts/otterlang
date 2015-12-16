@@ -5,8 +5,8 @@
         .module('app')
         .controller('StudyController', StudyController);
 
-    StudyController.$inject = ['$location', 'FlashService', '$rootScope'];
-    function StudyController($location, FlashService, $rootScope) {
+    StudyController.$inject = ['$location', 'FlashService', '$rootScope', '$http'];
+    function StudyController($location, FlashService, $rootScope, $http) {
         var vm = this;
         
         var numberPrompts = {
@@ -65,7 +65,8 @@
                 'Time from end of prompt, ms': '' // TODO determine length of audio file!
             };
             
-            $http.post('https://script.google.com/macros/s/AKfycbzy1IfR7EnffJuxotEutGIsFDMF5q44bLFDVD48GqWE1swlDSE/exec', data).then(
+            var datastr = $.param(data);
+            $http.jsonp('https://script.google.com/macros/s/AKfycbzy1IfR7EnffJuxotEutGIsFDMF5q44bLFDVD48GqWE1swlDSE/exec?prefix=JSON_CALLBACK&' + datastr).then(
                 function success() {
                     if (vm.prompts.length > 0)
                         setTimeout(startQuestion, 3000);
