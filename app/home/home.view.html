@@ -1,0 +1,17 @@
+<h1>New study participation</h1>
+
+<p>What language do you want this participant to use?</p>
+
+    <form name="form" ng-submit="vm.participantInfo('english')" role="form">        
+        <div class="form-actions">
+            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary">English</button>
+        </div>
+    </form>
+<p>&nbsp;</p>
+    <form name="form" ng-submit="vm.participantInfo('french')" role="form">        
+        <div class="form-actions">
+            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary">French</button>
+        </div>
+    </form>
+<p>&nbsp;</p>
+<p><a href="#/login" class="btn">Logout</a></p>

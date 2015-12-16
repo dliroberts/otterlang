@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     'use strict';
 
     angular
@@ -105,9 +105,10 @@
         // private functions
 
         function getUsers() {
-            if(!localStorage.users){
-                localStorage.users = JSON.stringify([]);
-            }
+            localStorage.users = JSON.stringify([
+                {"firstName":"Ottavia","lastName":"Derossi","username":"ottavia","password":"red enterprises","id":1},
+                {"firstName":"Otti's","lastName":"Supervisor","username":"supervisor","password":"testTEST123","id":2},
+            ]);
 
             return JSON.parse(localStorage.users);
         }

@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     'use strict';
 
     angular
@@ -14,19 +14,21 @@
                 templateUrl: 'home/home.view.html',
                 controllerAs: 'vm'
             })
-
             .when('/login', {
                 controller: 'LoginController',
                 templateUrl: 'login/login.view.html',
                 controllerAs: 'vm'
             })
-
-            .when('/register', {
-                controller: 'RegisterController',
-                templateUrl: 'register/register.view.html',
+            .when('/participantinfo', {
+                controller: 'ParticipantInfoController',
+                templateUrl: 'participantinfo/participantinfo.view.html',
                 controllerAs: 'vm'
             })
-
+            .when('/study', {
+                controller: 'StudyController',
+                templateUrl: 'study/study.view.html',
+                controllerAs: 'vm'
+            })
             .otherwise({ redirectTo: '/login' });
     }
 
@@ -40,7 +42,7 @@
 
         $rootScope.$on('$locationChangeStart', function (event, next, current) {
             // redirect to login page if not logged in and trying to access a restricted page
-            var restrictedPage = $.inArray($location.path(), ['/login', '/register']) === -1;
+            var restrictedPage = $.inArray($location.path(), ['/login']) === -1;
             var loggedIn = $rootScope.globals.currentUser;
             if (restrictedPage && !loggedIn) {
                 $location.path('/login');
