@@ -26,6 +26,8 @@
         vm.finished = false;
         vm.acceptInput = false;
         
+        var durationMillis = 0;
+        
         setTimeout(function() {startQuestion();}, PRE_PROMPT_PAUSE_MILLIS);
 
         (function initController() {
@@ -39,10 +41,16 @@
             var extension = '.mp3';
             if (vm.studylanguage == 'english') extension = '.wav'; // hackery
             
-            var audio = new Audio('../../audio/' + vm.studylanguage + '/' + vm.number + extension);
             vm.questionStartTs = new Date().getTime();
-            readyForResponse(true);
-            audio.play();
+            
+            var audio = new Audio();
+            audio.src = '../../audio/' + vm.studylanguage + '/' + vm.number + extension;
+            audio.addEventListener('loadedmetadata', function() {
+                audio.play(); 
+                readyForResponse(true);
+                durationMillis = Math.round(audio.duration * 1000);
+//                console.log('duration = ' + durationMillis);
+            });
         }
 
         function submitAnswer() {
@@ -65,17 +73,21 @@
             
             readyForResponse(false);
             
+            var timeFromStart = new Date().getTime() - vm.questionStartTs;
             var data = {
                 'Language': vm.studylanguage,
                 'Participant name': $rootScope.globals.participantname,
                 'Number prompted': vm.number,
                 'Number typed': answer,
+                'Time from start of clip, ms': timeFromStart,
+                'Time from end of clip, ms': timeFromStart - durationMillis,
                 'Correct?': prompt == answer,
-                'Time from start of prompt, ms': new Date().getTime() - vm.questionStartTs,
-                'Time from end of prompt, ms': '' // TODO determine length of audio file!
+                'Clip duration': durationMillis,
+                ' ': ''
             };
             
             var datastr = $.param(data);
+            console.log(datastr);
             $http.jsonp('https://script.google.com/macros/s/AKfycbzy1IfR7EnffJuxotEutGIsFDMF5q44bLFDVD48GqWE1swlDSE/exec?prefix=JSON_CALLBACK&' + datastr).then(
                 function success() {
                     if (vm.prompts.length > 0) {
