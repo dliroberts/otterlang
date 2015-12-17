@@ -25,6 +25,7 @@
         readyForResponse(false);
         vm.finished = false;
         vm.acceptInput = false;
+        var responseStartTs = -1;
         
         var durationMillis = 0;
         
@@ -56,7 +57,7 @@
         function submitAnswer() {
             var answer = vm.answer;
             $('form #answer').val('');
-            if (!vm.acceptInput) {
+            if (!vm.acceptInput || !answer) {
                 console.log('throwing away superfluous enter');
                 return;
             }
@@ -73,9 +74,10 @@
             
             readyForResponse(false);
             
-            var timeFromStart = new Date().getTime() - vm.questionStartTs;
+            var ts = new Date().getTime();
+            var timeFromStart = ts - vm.questionStartTs;
             var data = {
-                'Language': vm.studylanguage,
+                'Language': capitaliseFirstLetter(vm.studylanguage),
                 'Participant name': $rootScope.globals.participantname,
                 'Number prompted': vm.number,
                 'Number typed': answer,
@@ -83,11 +85,13 @@
                 'Time from end of clip, ms': timeFromStart - durationMillis,
                 'Correct?': prompt == answer,
                 'Clip duration': durationMillis,
-                ' ': ''
-            };
+                ' ': ' '
+            };//,
+//                'First press, from start of clip, ms': ts - responseStartTs,
+//                'First press, from end of clip, ms': ts - responseStartTs - durationMillis,
             
             var datastr = $.param(data);
-            console.log(datastr);
+//            console.log(datastr);
             $http.jsonp('https://script.google.com/macros/s/AKfycbzy1IfR7EnffJuxotEutGIsFDMF5q44bLFDVD48GqWE1swlDSE/exec?prefix=JSON_CALLBACK&' + datastr).then(
                 function success() {
                     if (vm.prompts.length > 0) {
@@ -110,6 +114,7 @@
             if (ready) {
                 $('.notice').hide();
                 $('#answer').removeClass('pleasewait');
+                responseStartTs = -1;
             }
             else {
                 $('.notice').show();
@@ -117,11 +122,20 @@
             }
             vm.acceptInput = ready;
         }
-
+        
+        function capitaliseFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
         function endStudy() {
             $location.path('/');
         }
         
-        $('form #answer').focus();
+        var answerInput = $('form #answer');
+        answerInput.focus();
+        answerInput.change(function() {
+            if (responseStartTs == -1 && vm.acceptInput)
+                responseStartTs = new Date().getTime();
+        });
     }
 })();
