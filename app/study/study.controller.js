@@ -12,18 +12,20 @@
         var PRE_PROMPT_PAUSE_MILLIS = 2500;
         
         var numberPrompts = {
-            english: [1,2,3,4],
-            french: [1,2,3]
+            demo: [1,2,3,4,5,6,7,8,9],
+            live: [11,13,15,17,22,23,34,39,40,47,54,56,60,70,71,74,78,80,82,85,87,90,93,96,99]
         };
         
         vm.submitAnswer = submitAnswer;
         vm.startQuestion = startQuestion;
         vm.endStudy = endStudy;
+        vm.startLiveStudy = startLiveStudy;
         
         vm.number = null;
         vm.questionStartTs = null;
         readyForResponse(false);
-        vm.finished = false;
+        vm.demofinished = false;
+        vm.livefinished = false;
         vm.acceptInput = false;
         var responseStartTs = -1;
         
@@ -33,19 +35,17 @@
 
         (function initController() {
             vm.studylanguage = $rootScope.globals.studylanguage;
-            vm.prompts = _.shuffle(angular.copy(numberPrompts[vm.studylanguage]));
+            vm.mode = $rootScope.globals.mode;
+            vm.prompts = _.shuffle(angular.copy(numberPrompts[vm.mode]));
         })();
         
         function startQuestion() {
             vm.number = vm.prompts.pop();
             
-            var extension = '.mp3';
-            if (vm.studylanguage == 'english') extension = '.wav'; // hackery
-            
             vm.questionStartTs = new Date().getTime();
             
             var audio = new Audio();
-            audio.src = '../../audio/' + vm.studylanguage + '/' + vm.number + extension;
+            audio.src = '../../audio/' + vm.studylanguage + '/' + vm.number + '.mp3';
             audio.addEventListener('loadedmetadata', function() {
                 audio.play(); 
                 readyForResponse(true);
@@ -85,6 +85,7 @@
                 'Time from end of clip, ms': timeFromStart - durationMillis,
                 'Correct?': prompt == answer,
                 'Clip duration': durationMillis,
+                'Mode': vm.mode,
                 ' ': ' '
             };//,
 //                'First press, from start of clip, ms': ts - responseStartTs,
@@ -100,7 +101,10 @@
                         setTimeout(startQuestion, timeout);
                     }
                     else {
-                        vm.finished = true;
+                        if (vm.mode === 'demo')
+                            vm.demofinished = true;
+                        else
+                            vm.livefinished = true;
                     }
                 },
                 function failure(error) {
@@ -129,6 +133,11 @@
         
         function endStudy() {
             $location.path('/');
+        }
+        
+        function startLiveStudy() {
+            $rootScope.globals.mode = 'live';
+            $location.path('/study');
         }
         
         var answerInput = $('form #answer');

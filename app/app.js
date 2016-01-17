@@ -24,6 +24,11 @@
                 templateUrl: 'participantinfo/participantinfo.view.html',
                 controllerAs: 'vm'
             })
+            .when('/demo', {
+                controller: 'StudyController',
+                templateUrl: 'study/study.view.html',
+                controllerAs: 'vm'
+            })
             .when('/study', {
                 controller: 'StudyController',
                 templateUrl: 'study/study.view.html',

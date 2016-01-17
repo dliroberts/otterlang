@@ -21,12 +21,12 @@
 
         function startStudy() {
             $rootScope.globals.participantname = vm.participantname;
-            $rootScope.globals.dateofbirth = vm.dateofbirth;
-            $location.path('/study');
+            $rootScope.globals.mode = 'demo';
+            $location.path('/demo');
         }
         
         function testAudio() {
-            var audio = new Audio('../../audio/english/1.wav');
+            var audio = new Audio('../../audio/english/1.mp3');
             audio.play();
         }
     }

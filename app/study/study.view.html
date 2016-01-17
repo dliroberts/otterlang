@@ -1,5 +1,8 @@
 <div class="col-md-6 col-md-offset-3">
-    <form name="form" ng-submit="vm.submitAnswer()" role="form" ng-hide="vm.finished">
+    <form name="form" ng-submit="vm.submitAnswer()" role="form" ng-hide="vm.livefinished || vm.demofinished">
+        
+        <h1 ng-if="vm.mode == 'demo'">DEMO</h1>
+        
         <h2>Type the number you hear into the box and press 'enter'</h2>
     
         <div class="form-group" ng-class="{ 'has-error': form.answer.$dirty && form.answer.$error.required}">
@@ -10,7 +13,15 @@
         <div class="notice">Please wait for the number to be read out...</div>
     </form>
 
-    <form name="form" ng-submit="vm.endStudy()" role="form" ng-show="vm.finished">
+    <form name="form" ng-submit="vm.startLiveStudy()" role="form" ng-show="vm.demofinished">
+        <h2>Thank you! The demo is complete.</h2>
+        <p>When you're ready, click OK to start the study. 25 numbers will be read out, each of which is between 10 and 99.</p>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Start study</button>
+        </div>
+    </form>
+
+    <form name="form" ng-submit="vm.endStudy()" role="form" ng-show="vm.livefinished">
         <h2>Thank you! All done.</h2>
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">OK</button>
