@@ -9,7 +9,7 @@
     function StudyController($location, FlashService, $rootScope, $http, $scope, $timeout) {
         var vm = this;
         
-        var PRE_PROMPT_PAUSE_MILLIS = 2500;
+        var PRE_PROMPT_PAUSE_MILLIS = 2000;
         
         var numberPrompts = {
             demo: [1,2,3,4,5,6,7,8,9],
@@ -108,6 +108,7 @@
                     }
                 },
                 function failure(error) {
+                    // TODO retry
                     alert('Unable to send data :( - ' + JSON.stringify(error));
                 }
             );
