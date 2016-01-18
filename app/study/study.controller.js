@@ -74,8 +74,8 @@
             
             readyForResponse(false);
             
-            var ts = new Date().getTime();
-            var timeFromStart = ts - vm.questionStartTs;
+            var ts = new Date();
+            var timeFromStart = ts.getTime() - vm.questionStartTs;
             var data = {
                 'Language': capitaliseFirstLetter(vm.studylanguage),
                 'Participant name': $rootScope.globals.participantname,
@@ -86,6 +86,7 @@
                 'Correct?': prompt == answer,
                 'Clip duration': durationMillis,
                 'Mode': vm.mode,
+                'Date/time': ts.toLocaleString(),
                 ' ': ' '
             };//,
 //                'First press, from start of clip, ms': ts - responseStartTs,
@@ -93,6 +94,10 @@
             
             var datastr = $.param(data);
 //            console.log(datastr);
+            callService(datastr, answerSubmitTs, 3);
+        }
+        
+        function callService(datastr, answerSubmitTs, retries) {
             $http.jsonp('https://script.google.com/macros/s/AKfycbzy1IfR7EnffJuxotEutGIsFDMF5q44bLFDVD48GqWE1swlDSE/exec?prefix=JSON_CALLBACK&' + datastr).then(
                 function success() {
                     if (vm.prompts.length > 0) {
@@ -108,11 +113,14 @@
                     }
                 },
                 function failure(error) {
-                    // TODO retry
-                    alert('Unable to send data :( - ' + JSON.stringify(error));
+                    retries--;
+                    if (retries > 0)
+                        callService(datastr, answerSubmitTs, retries);
+                    else
+                        alert('Unable to send data :( - ' + JSON.stringify(error));
                 }
             );
-        };
+        }
         
         // Hackery... Wasn't working with ng-show and ng-class :(
         function readyForResponse(ready) {
